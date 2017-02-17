@@ -284,10 +284,12 @@ defmodule Phoenix.Socket.Transport do
   end
   def on_exit_message(topic, join_ref, reason) do
     case reason do
-      :normal        -> %Message{ref: join_ref, topic: topic, event: "phx_close", payload: %{}}
-      :shutdown      -> %Message{ref: join_ref, topic: topic, event: "phx_close", payload: %{}}
-      {:shutdown, _} -> %Message{ref: join_ref, topic: topic, event: "phx_close", payload: %{}}
-      _              -> %Message{ref: join_ref, topic: topic, event: "phx_error", payload: %{}}
+      :normal              -> %Message{ref: join_ref, topic: topic, event: "phx_close", payload: %{}}
+      :shutdown            -> %Message{ref: join_ref, topic: topic, event: "phx_error", payload: %{}}
+      {:shutdown, :left}   -> %Message{ref: join_ref, topic: topic, event: "phx_close", payload: %{}}
+      {:shutdown, :closed} -> %Message{ref: join_ref, topic: topic, event: "phx_close", payload: %{}}
+      {:shutdown, _}       -> %Message{ref: join_ref, topic: topic, event: "phx_error", payload: %{}}
+      _                    -> %Message{ref: join_ref, topic: topic, event: "phx_error", payload: %{}}
     end
   end
 
